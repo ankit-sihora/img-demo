@@ -6,10 +6,10 @@ export default class logi extends Component {
     render(){
         return(
             <View style={styles.container}>
-                <Image style={styles.img} source={{uri:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTun3WzOzX8FaZyerPCKRN2Kk9dEOb8s-npHQdlS5YRf7vd9Rx6"}}></Image>
-                <Text>Thank You For Sign-In</Text>
-                <Icon name='check' size={32}></Icon>
-                <Text>Version </Text>
+                <Image style={styles.img} resizeMode='contain' source={{uri:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTun3WzOzX8FaZyerPCKRN2Kk9dEOb8s-npHQdlS5YRf7vd9Rx6"}}></Image>
+                <Text style={styles.txt}>Thank You For Sign-In</Text>
+                <Icon name='check' size={32} style={styles.ic}></Icon>
+                <Text style={styles.txt}>Version 2.1</Text>
             </View>
         )
     
@@ -18,9 +18,22 @@ export default class logi extends Component {
 
 const styles=StyleSheet.create({
     container:{
-
+        flex:1,
+        alignItems:'center',
+        //justifyContent:'center'
+        
+    },
+    ic:{
+        flex:1,
     },
     img:{
         width: 50, height: 50,
+        flex:1,
+        
+    },
+    txt:{
+        flex:1,
+        color:'#0099ff',
+        fontWeight:'400',
     },
 })

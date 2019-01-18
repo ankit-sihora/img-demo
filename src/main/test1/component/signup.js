@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity,ScrollView } from 'react-native';
-import { ButtonGroup,Divider, Button } from 'react-native-elements';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity,ScrollView,Platform,AsyncStorage } from 'react-native';
+import { ButtonGroup,Divider } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 import DatePicker from 'react-native-datepicker';
@@ -17,10 +17,33 @@ export default class dem extends Component {
             mal:0,
             name: 'ankit',
             date: "",
+            userFname:'hello',
+            userLname:'',
         }
         this.updateIndex = this.updateIndex.bind(this)
         this.updateIndexM = this.updateIndexM.bind(this)
     }
+
+    _storeData = async () => {
+        try {
+          await AsyncStorage.setItem('user_data', {"userFname":"this.state.userFname"});
+        } catch (error) {
+          // Error saving data
+        }
+      }
+      _retrieveData = async () => {
+        try {
+          const value = await AsyncStorage.getItem('user_data');
+          if (value !== null) {
+            // We have data!!
+            value=value+'sringify',
+            console.log(value);
+            this.setState({userFname:value})
+          }
+         } catch (error) {
+           // Error retrieving data
+         }
+      }
     updateIndex(selectedIndex) {
         this.setState({ selectedIndex })
     }
@@ -34,11 +57,11 @@ export default class dem extends Component {
         const female = () => <Text>Female</Text>
         const buttons = [{ element: component1 }, { element: component2 }]
         const buttonm = [{element:male},{element:female}]
-        const { selectedIndex } = this.state
+        var { selectedIndex } = this.state
         const { mal }=this.state
         return (
             <View style={{ flex: 1, backgroundColor: 'white' }}>
-                <View style={{marginBottom:16}}>
+                <View style={{marginBottom:16,marginTop:Platform.OS === 'ios' ? 64 :0,}}>
                     <TouchableOpacity style={{ flexDirection: 'row' }}>
                         <Icon style={styles.searchIcon} name="chevron-thin-left" size={40} color='#0099ff' />
                         <Text style={{ paddingTop: 16, marginLeft: -16, fontSize: 20, color: '#0099ff' }}>
@@ -62,7 +85,7 @@ export default class dem extends Component {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="First Name"
-                                    onChangeText={(searchString) => { this.setState({ searchString }) }}
+                                    onChangeText={(text)=>{this.setState({userFname:text})}}
                                     underlineColorAndroid="transparent"
                                 />
                                 <View>
@@ -93,7 +116,7 @@ export default class dem extends Component {
                                 />
                             </View>
                             <Divider style={{ backgroundColor: 'blue',height: 2, backgroundColor: 'gray', marginHorizontal:32}} />
-                            <View style={{marginTop:32,marginLeft:32,flexDirection:'row',flex:1}}><Text>Gender:</Text>
+                            <View style={{marginTop:16,marginLeft:32,flexDirection:'row',flex:1,alignItems:'center'}}><Text>Gender:</Text>
                                 <ButtonGroup 
                                     onPress={this.updateIndexM}
                                     selectedIndex={ mal }
@@ -105,15 +128,23 @@ export default class dem extends Component {
                                 </View>
                                 <Divider style={{ backgroundColor: 'blue',height: 2, backgroundColor: 'gray', marginHorizontal:32,marginVertical:16}} />
                             <View style={{flex:1,flexDirection:'row',alignItems:'center',marginHorizontal:32}}>
-                                <Text>Email Address</Text>
-                                <TextInput></TextInput>
+                                <Text>Email Address:</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Email Address"
+                                    onChangeText={(searchString) => { this.setState({ searchString }) }}
+                                    underlineColorAndroid="transparent"
+                                />
                                 <Feather name="info" size={32}></Feather> 
                             </View>
                             <Divider style={{ backgroundColor: 'blue',height: 2, backgroundColor: 'gray', marginHorizontal:32,marginVertical:16}} />
-                            <Divider style={{ backgroundColor: 'blue',height: 2, backgroundColor: 'gray', marginHorizontal:32,marginVertical:16}} />
+                            
                             <View style={{flex:1,flexDirection:'row',alignItems:'center',marginHorizontal:32}}>
                                 <Text>Password:</Text>
-                                <TextInput placeholder='***'></TextInput>
+                                <TextInput
+                                    style={{flex:1} }
+                                    secureTextEntry
+                                    placeholder='***'></TextInput>
                                 
                             </View>
                             <Divider style={{ backgroundColor: 'blue',height: 2, backgroundColor: 'gray', marginHorizontal:32,marginVertical:16}} />
@@ -144,7 +175,7 @@ export default class dem extends Component {
                                     // ... You can check the source to find the other keys.
                                 }}
                                 onDateChange={(date) => { this.setState({ date: date }) }}
-                            /></View></View><View style={{flex:1,flexDirection:'row',justifyContent:'center',marginTop:32}}><TouchableOpacity style={{flex:1,height:40,backgroundColor:'blue',borderRadius:20,marginLeft:60,marginRight:15,alignItems:'center',justifyContent:'center',backgroundColor:'gray'}}><Text>Edit</Text></TouchableOpacity><TouchableOpacity style={{flex:1,height:40,borderRadius:20,marginRight:60,marginLeft:15,alignItems:'center',justifyContent:'center',backgroundColor:'gray'}}><Text>Save</Text></TouchableOpacity></View></View>
+                            /></View></View><View style={{flex:1,flexDirection:'row',justifyContent:'center',marginTop:32}}><TouchableOpacity style={{flex:1,height:40,backgroundColor:'blue',borderRadius:20,marginLeft:40,marginRight:15,alignItems:'center',justifyContent:'center',backgroundColor:'gray'}}><Text>Edit</Text></TouchableOpacity><TouchableOpacity onPress={()=>{/* this.setState({selectedIndex:0}); */this._storeData()}} style={{flex:1,height:40,borderRadius:20,marginRight:40,color:'white',marginLeft:15,alignItems:'center',justifyContent:'center',backgroundColor:'lightblue'}}><Text>Save{this.state.userFname}</Text></TouchableOpacity></View></View>
                             </ScrollView>
                         </View>
                         )
@@ -160,7 +191,7 @@ export default class dem extends Component {
                                     underlineColorAndroid="transparent"
                                 />
                                 <View>
-                                    <Icon name='circle-with-cross'></Icon>
+                                    <Icon name='circle-with-cross' size={32}></Icon>
                                 </View>
                             </View>
                             <Divider style={{ backgroundColor: 'blue',height: 2, backgroundColor: 'gray', marginHorizontal:32}} />
@@ -169,24 +200,26 @@ export default class dem extends Component {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="password "
+                                    secureTextEntry
                                     onChangeText={(searchString) => { this.setState({ searchString }) }}
                                     underlineColorAndroid="transparent"
                                 />
                                 <View>
-                                    <MaterialIcons name='visibility-off'></MaterialIcons>
+                                    <MaterialIcons name='visibility-off' size={32}></MaterialIcons>
                                 </View>
                             </View><Divider style={{ backgroundColor: 'blue',height: 2, backgroundColor: 'gray', marginHorizontal:32}} />
                             <View style={{marginTop:16}}><ToggleSwitch
                                         isOn={true}
-                                        onColor='green'
+                                        onColor='#88ef44'
                                         offColor='red'
                                         label='save password'
                                         labelStyle={{color: 'black', fontWeight: '400',}}
                                         size='medium'
-                                        onToggle={ (isOn) => console.log('changed to : ', isOn) }
+                                        icon={<EvilIcons name='check'size={20}></EvilIcons>}
+                                        onToggle={ ()=>this.props.isOn=false }
                                     />
                                 </View>
-                                <View style={{flex:1,flexDirection:'row',justifyContent:'center',marginTop:32}}><TouchableOpacity style={{flex:1,height:40,backgroundColor:'blue',borderRadius:20,marginLeft:60,marginRight:15,alignItems:'center',justifyContent:'center',backgroundColor:'gray'}}><Text>Cancel</Text></TouchableOpacity><TouchableOpacity style={{flex:1,height:40,borderRadius:20,marginRight:60,marginLeft:15,alignItems:'center',justifyContent:'center',backgroundColor:'gray'}}><Text>Login</Text></TouchableOpacity></View>
+                                <View style={{flex:1,flexDirection:'row',justifyContent:'center',marginTop:32}}><TouchableOpacity style={{flex:1,height:40,backgroundColor:'blue',borderRadius:20,marginLeft:60,marginRight:15,alignItems:'center',justifyContent:'center',backgroundColor:'gray'}}><Text>Cancel</Text></TouchableOpacity><TouchableOpacity onPress={()=>this._retrieveData()} style={{flex:1,height:40,borderRadius:20,marginRight:60,marginLeft:15,alignItems:'center',justifyContent:'center',backgroundColor:'lightblue'}}><Text>Login{this.state.userFname}</Text></TouchableOpacity></View>
                         </View>
                     )
                 }
