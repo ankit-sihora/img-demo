@@ -6,7 +6,7 @@ import logi from './component/login'
 const RouterDemo = () => (
     <Router>
         <Stack headerLayoutPreset="center" key='root'>
-        <Scene key="login" hideNavBar component={dem}  onEnter={() => alert('this is signup page')} back/>
+        <Scene key="login" hideNavBar component={dem} back/>
         <Scene key='last' hideNavBar component={logi} />
         </Stack>
     </Router>
