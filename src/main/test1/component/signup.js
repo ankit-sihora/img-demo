@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, Platform, AsyncStorage, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, Modal, Platform, TouchableHighlight, AsyncStorage, Alert, DatePickerIOS } from 'react-native';
 import { ButtonGroup, Divider } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
@@ -15,6 +15,7 @@ export default class dem extends Component {
         super()
         this.state = {
             selectedIndex: 0,
+            modalVisible: false,
             mal: 0,
             //name: 'ankit',
             date: "",
@@ -22,13 +23,22 @@ export default class dem extends Component {
             password: '',
             validate_user: '',
             validate_pass: '',
-            pass_flag:true,
-            userFname:'',
+            pass_flag: true,
+            userFname: '',
+            chosenDate: new Date(),
+            lname:'',
         }
         this.updateIndex = this.updateIndex.bind(this)
         this.updateIndexM = this.updateIndexM.bind(this)
+        this.setDate = this.setDate.bind(this);
     }
-visibility(){(this.state.pass_flag==false)?(this.setState({pass_flag:true})):(this.setState({pass_flag:false}))}
+    setModalVisible(visible) {
+        this.setState({modalVisible: visible});
+      }
+    setDate(newDate) {
+        this.setState({ chosenDate: newDate });
+    }
+    visibility() { (this.state.pass_flag == false) ? (this.setState({ pass_flag: true })) : (this.setState({ pass_flag: false })) }
 
     updateIndex(selectedIndex) {
         this.setState({ selectedIndex })
@@ -63,10 +73,39 @@ visibility(){(this.state.pass_flag==false)?(this.setState({pass_flag:true})):(th
                     selectedButtonStyle={{ backgroundColor: '#0099ff' }}
                     containerStyle={{ height: 40, marginTop: 0, marginLeft: 32, marginRight: 32, borderRadius: 8, borderColor: '#0099ff' }} >
                 </ButtonGroup>
+
+                <Modal
+          animationType='slide'
+          transparent={false}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+          }}>
+          <View style={{marginTop: 22}}>
+            <View>
+              <Text>Hello World!</Text>
+
+              <TouchableHighlight
+                onPress={() => {
+                  this.setModalVisible(!this.state.modalVisible);
+                }}>
+                <Text>Hide Modal</Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal>
+
+        <TouchableHighlight
+          onPress={() => {
+            this.setModalVisible(true);
+          }}>
+          <Text>Show Modal</Text>
+        </TouchableHighlight>
+
                 {(this.state.selectedIndex == 1)
                     ? (
                         <View style={{ flex: 1, marginBottom: 16 }}>
-                            <ScrollView>
+                            <ScrollView style={{ flex: 1 }}>
                                 <View style={{ flex: 1, flexDirection: 'row', margin: 24 }}>
                                     <Icon name="user" size={32} color='black'></Icon>
                                     <TextInput
@@ -76,7 +115,7 @@ visibility(){(this.state.pass_flag==false)?(this.setState({pass_flag:true})):(th
                                         onChangeText={(text) => { this.setState({ userFname: text }) }}
                                         underlineColorAndroid="transparent"
                                     />
-                                    <View><TouchableOpacity onPress={()=>this.setState({userFname:''})}>
+                                    <View><TouchableOpacity onPress={() => this.setState({ userFname: '' })}>
                                         <Icon name='circle-with-cross' size={32}></Icon></TouchableOpacity>
                                     </View>
                                 </View>
@@ -86,7 +125,7 @@ visibility(){(this.state.pass_flag==false)?(this.setState({pass_flag:true})):(th
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Last Name"
-                                        onChangeText={(searchString) => { this.setState({ searchString }) }}
+                                        onChangeText={(searchStrig) => { this.setState({ lname:searchStrig}) }}
                                         underlineColorAndroid="transparent"
                                     />
                                     <View>
@@ -131,19 +170,19 @@ visibility(){(this.state.pass_flag==false)?(this.setState({pass_flag:true})):(th
                                     <Text>Password:</Text>
                                     <TextInput
                                         style={{ flex: 1 }}
-                                        secureTextEntry = {this.state.pass_flag}
-                                        onChangeText={(searchString) => { this.setState({ password: searchString }) }}
+                                        secureTextEntry={this.state.pass_flag}
+                                        onChangeText={(searchStrin) => { this.setState({ password: searchStrin }) }}
                                         placeholder='***'></TextInput>
-                                        <View><TouchableOpacity activeOpacity={0.1} onPress={() => this.visibility()}>
-                                    {(this.state.pass_flag==true)?(<MaterialIcons name='visibility-off' size={32}></MaterialIcons>):(<MaterialIcons name='visibility' size={32}></MaterialIcons>)}
-                                        
-                                        </TouchableOpacity></View>
+                                    <View><TouchableOpacity activeOpacity={0.1} onPress={() => this.visibility()}>
+                                        {(this.state.pass_flag == true) ? (<MaterialIcons name='visibility-off' size={32}></MaterialIcons>) : (<MaterialIcons name='visibility' size={32}></MaterialIcons>)}
+
+                                    </TouchableOpacity></View>
 
                                 </View>
                                 <Divider style={{ backgroundColor: 'blue', height: 2, backgroundColor: 'gray', marginHorizontal: 32, marginVertical: 16 }} />
                                 <View><View style={{ flexDirection: 'row', flex: 1, justifyContent: 'space-between', marginHorizontal: 32, alignItems: 'center' }}>
                                     <Text>Date Of Birth:</Text>
-                                    <View>
+                                    <View style={{ flex: 1 }}>{(Platform.OS === "android" ? (
                                         <DatePicker
                                             style={{ width: 200, }}
                                             date={this.state.date}
@@ -168,7 +207,11 @@ visibility(){(this.state.pass_flag==false)?(this.setState({pass_flag:true})):(th
                                                 // ... You can check the source to find the other keys.
                                             }}
                                             onDateChange={(date) => { this.setState({ date: date }) }}
-                                        /></View></View><View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginTop: 32 }}><TouchableOpacity style={{ flex: 1, height: 40, backgroundColor: 'blue', borderRadius: 20, marginLeft: 40, marginRight: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: 'gray' }}><Text>Edit</Text></TouchableOpacity><TouchableOpacity onPress={async () => { await AsyncStorage.multiSet([[this.state.Email, this.state.Email], [this.state.password, this.state.password]]); }} style={{ flex: 1, height: 40, borderRadius: 20, marginRight: 40, color: 'white', marginLeft: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: 'lightblue' }}><Text>Save</Text></TouchableOpacity></View></View>
+                                        />) : (<View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}><DatePickerIOS
+                                            date={this.state.chosenDate}
+                                            onDateChange={this.setDate}
+                                            style={{ alignContent: 'flex-end', width: "100%" }}
+                                        /></View>))}</View></View><View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginTop: 32 }}><TouchableOpacity style={{ flex: 1, height: 40, backgroundColor: 'blue', borderRadius: 20, marginLeft: 40, marginRight: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: 'gray' }}><Text>Edit</Text></TouchableOpacity><TouchableOpacity onPress={async () => { await AsyncStorage.multiSet([[this.state.Email, this.state.Email], [this.state.password, this.state.password]]); }} style={{ flex: 1, height: 40, borderRadius: 20, marginRight: 40, color: 'white', marginLeft: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: 'lightblue' }}><Text>Save</Text></TouchableOpacity></View></View>
                             </ScrollView>
                         </View>
                     )
@@ -183,7 +226,7 @@ visibility(){(this.state.pass_flag==false)?(this.setState({pass_flag:true})):(th
                                         placeholder="User "
                                         onChangeText={(searchString) => { this.setState({ validate_user: searchString }) }}
                                         underlineColorAndroid="transparent"
-                                        
+
                                     />
                                     <View>
                                         <Icon name='circle-with-cross' size={32}></Icon>
@@ -200,9 +243,9 @@ visibility(){(this.state.pass_flag==false)?(this.setState({pass_flag:true})):(th
                                         underlineColorAndroid="transparent"
                                     />
                                     <View><TouchableOpacity activeOpacity={0.1} onPress={() => this.visibility()}>
-                                    {(this.state.pass_flag==true)?(<MaterialIcons name='visibility-off' size={32}></MaterialIcons>):(<MaterialIcons name='visibility' size={32}></MaterialIcons>)}
-                                        
-                                        </TouchableOpacity></View>
+                                        {(this.state.pass_flag == true) ? (<MaterialIcons name='visibility-off' size={32}></MaterialIcons>) : (<MaterialIcons name='visibility' size={32}></MaterialIcons>)}
+
+                                    </TouchableOpacity></View>
                                 </View><Divider style={{ backgroundColor: 'blue', height: 2, backgroundColor: 'gray', marginHorizontal: 32 }} />
                                 <View style={{ marginTop: 16 }}><View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginEnd: 32, alignItems: 'center' }}>
                                     <Text>Save Password</Text>
@@ -219,22 +262,31 @@ visibility(){(this.state.pass_flag==false)?(this.setState({pass_flag:true})):(th
                                 /> */}
                                 </View>
                                 <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginTop: 32 }}>
-                                    <TouchableOpacity style={{ flex: 1, height: 40, backgroundColor: 'blue', borderRadius: 20, marginLeft: 60, marginRight: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: 'gray' }}><Text>Cancel</Text></TouchableOpacity><TouchableOpacity onPress={async () => {
-                                        try {
-                                            await AsyncStorage.multiGet([this.state.validate_user, this.state.validate_pass], (err, value) => {
-                                                /*  value.map((result) => {
-                                                     result.toString();
-                                                     let value = result[0];
-                                                     Alert.alert('hello',value)
-                                                 }); */
-                                                //Alert.alert('hello',value[0][1].toString());
-                                                ((value[0][1].toString() == this.state.validate_user && value[1][1].toString() == this.state.validate_pass) ? (Alert.alert('good')) : (Alert.alert('donot try to hack')));
-
-                                            });
-                                        } catch (err) {
-                                            console.error(e.message);
-                                        }
-                                    }}
+                                    <TouchableOpacity style={{ flex: 1, height: 40, backgroundColor: 'blue', borderRadius: 20, marginLeft: 60, marginRight: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: 'gray' }}>
+                                        <Text>Cancel</Text></TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={async () => {
+                                            try {
+                                                await AsyncStorage.multiGet([this.state.validate_user, this.state.validate_pass], (err, value) => {
+                                                    /* value.map((result) => {
+                                                        result.toString();
+                                                        let value = result[0];
+                                                        Alert.alert('hello',value)
+                                                    }); 
+                                                   Alert.alert('hello',value[0][1].toString()); */
+                                                    /* try {
+                                                        if (value[0][1].toString()){
+                                                            ((value[0][1].toString() == this.state.validate_user && value[1][1].toString() == this.state.validate_pass) ? (Alert.alert('good')) : (Alert.alert('donot try to hack')));
+                                                            }else{Alert.alert('alt')}
+                                                    } catch (error) {
+                                                        Alert.alert('user id should not be nulll')
+                                                    } */
+                                                    ((value[0][1].toString() == this.state.validate_user && value[1][1].toString() == this.state.validate_pass) ? (Alert.alert('good')) : (Alert.alert('donot try to hack')));
+                                                })  ;
+                                            } catch (e) {
+                                                console.error(e.message);
+                                            }
+                                        }}
                                         style={{ flex: 1, height: 40, borderRadius: 20, marginRight: 60, marginLeft: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: 'lightblue' }}><Text>Login</Text></TouchableOpacity></View>
                             </ScrollView></View>
                     )
